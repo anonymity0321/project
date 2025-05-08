@@ -1,9 +1,11 @@
-from django.shortcuts import render, redirect
+# project/MyWebSite/FileShare/views.py
+from django.shortcuts import render,redirect
 from .models import Files
 from .forms import FileUploadForm, FolderUploadForm
 import hashlib
 from django.contrib import messages
 import os
+
 def upload_file(request):
     if request.method == 'POST':
         for file in request.FILES.getlist('files'):
@@ -30,8 +32,12 @@ def upload_file(request):
     return render(request, 'fileshare/upload_file.html', {'form': form})
 
 def file_list(request):
-    files = Files.objects.all()
-    return render(request, 'fileshare/file_list.html', {'files': files})
+    query = request.GET.get('q', '')
+    if query:
+        files = Files.objects.filter(files__icontains=query)
+    else:
+        files = Files.objects.all()
+    return render(request, 'fileshare/file_list.html', {'files': files, 'query': query})
 
 def upload_folder(request):
     if request.method == 'POST':

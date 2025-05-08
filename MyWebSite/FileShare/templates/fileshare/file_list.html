@@ -1,4 +1,4 @@
-<!-- MyWebSite/FileShare/templates/fileshare/file_list.html -->
+<!-- project/MyWebSite/FileShare/templates/fileshare/file_list.html -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -37,6 +37,19 @@
                     <span>上传文件夹</span>
                 </a>
             </div>
+            <form class="flex" method="get">
+                <input type="text" name="q" placeholder="搜索文件" value="{{ query }}"
+                    class="border border-gray-300 rounded-l px-3 py-2 focus:outline-none focus:ring focus:border-blue-500">
+                <button type="submit"
+                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-r">搜索</button>
+            </form>
+            {% if query %}
+            <a href="{% url 'file_list' %}"
+                class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded flex items-center space-x-2">
+                <i class="fa-solid fa-undo"></i>
+                <span>返回</span>
+            </a>
+            {% endif %}
         </div>
     </nav>
     <!-- 文件列表区域 -->
