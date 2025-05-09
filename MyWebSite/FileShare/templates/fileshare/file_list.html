@@ -59,7 +59,7 @@
             <li class="bg-white p-4 rounded shadow-md flex justify-between items-center">
                 <div class="flex items-center space-x-2">
                     <i class="fa-solid fa-file"></i>
-                    <a href="{{ file.files.url }}" class="file-link text-gray-800 text-lg font-medium">
+                    <a href="{% url 'download_file' file.pk %}" class="file-link text-gray-800 text-lg font-medium">
                         {{ file.files.name }}
                     </a>
                 </div>

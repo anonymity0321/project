@@ -4,8 +4,10 @@ from .models import Files
 from .forms import FileUploadForm, FolderUploadForm
 import hashlib
 from django.contrib import messages
+from django.http import HttpResponse, Http404
+from django.shortcuts import get_object_or_404
+from django.utils.encoding import escape_uri_path
 import os
-
 def upload_file(request):
     if request.method == 'POST':
         for file in request.FILES.getlist('files'):
@@ -68,3 +70,32 @@ def upload_folder(request):
     else:
         form = FolderUploadForm()
     return render(request, 'fileshare/upload_folder.html', {'form': form})
+
+
+force_download_types = ['.html', '.htm', '.svg', '.md']
+def download_file(request, file_id):
+    # 获取文件对象
+    file_obj = get_object_or_404(Files, id=file_id)
+    
+    # 检查文件是否存在
+    if not os.path.exists(file_obj.files.path):
+        raise Http404("文件不存在")
+    
+    # 打开文件
+    with open(file_obj.files.path, 'rb') as f:
+        response = HttpResponse(f, content_type='application/octet-stream')
+        
+        # 获取文件名和扩展名
+        filename = os.path.basename(file_obj.files.name)
+        name, ext = os.path.splitext(filename)
+        
+        # 对于特定类型的文件，强制下载
+        if ext.lower() in force_download_types:
+            # 使用escape_uri_path处理文件名，确保中文等特殊字符正确编码
+            response['Content-Disposition'] = f'attachment; filename="{escape_uri_path(filename)}"'
+        else:
+            # 非强制下载类型使用默认行为
+            response['Content-Disposition'] = f'inline; filename="{escape_uri_path(filename)}"'
+        
+        return response
+    
